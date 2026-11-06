@@ -224,6 +224,24 @@ export async function updateOrderStatus(
   }
 }
 
+export async function deleteOrderById(orderId: string): Promise<boolean> {
+  try {
+    const client = getAdminClient();
+    const { data, error } = await client
+      .from('bch_orders')
+      .delete()
+      .eq('id', orderId)
+      .select('id')
+      .maybeSingle();
+
+    if (error) throw error;
+    return !!data;
+  } catch (e) {
+    console.error('Failed to delete order:', e);
+    return false;
+  }
+}
+
 export async function updatePaymentStatus(
   orderId: string,
   status: Order['payment_status']
