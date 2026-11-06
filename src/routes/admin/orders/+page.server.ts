@@ -1,5 +1,5 @@
 import type { PageServerLoad, Actions } from './$types';
-import { getAllOrders, updateOrderStatus } from '$lib/server/orders';
+import { deleteOrderById, getAllOrders, updateOrderStatus } from '$lib/server/orders';
 import type { Order } from '$lib/types';
 import { fail } from '@sveltejs/kit';
 
@@ -50,6 +50,20 @@ export const actions: Actions = {
 
     const success = await updateOrderStatus(orderId, status);
     if (!success) return fail(500, { error: 'Failed to update order status' });
+
+    return { success: true };
+  },
+
+  deleteOrder: async ({ request }) => {
+    const formData = await request.formData();
+    const orderId = formData.get('order_id');
+
+    if (typeof orderId !== 'string' || !orderId) {
+      return fail(400, { error: 'Missing order ID' });
+    }
+
+    const success = await deleteOrderById(orderId);
+    if (!success) return fail(500, { error: 'Failed to delete order' });
 
     return { success: true };
   }
