@@ -154,7 +154,7 @@ export async function getOrderByNumber(
     const client = getAdminClient();
     let query = client
       .from('bch_orders')
-      .select('*, order_items(*), payments(*)')
+      .select('*, order_items:bch_order_items(*), payments:bch_payments(*)')
       .eq('order_number', orderNumber);
 
     if (phone) {
@@ -176,7 +176,7 @@ export async function getOrderByNumberOnly(orderNumber: string): Promise<Order |
     const client = getAdminClient();
     const { data, error } = await client
       .from('bch_orders')
-      .select('*, order_items(*)')
+      .select('*, order_items:bch_order_items(*)')
       .eq('order_number', orderNumber)
       .single();
 
@@ -193,7 +193,7 @@ export async function getAllOrders(limit = 100, offset = 0): Promise<Order[]> {
     const client = getAdminClient();
     const { data, error } = await client
       .from('bch_orders')
-      .select('*, order_items(*)')
+      .select('*, order_items:bch_order_items(*)')
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1);
 
@@ -249,7 +249,7 @@ export async function getOrderById(orderId: string): Promise<Order | null> {
     const client = getAdminClient();
     const { data, error } = await client
       .from('bch_orders')
-      .select('*, order_items(*), payments(*)')
+      .select('*, order_items:bch_order_items(*), payments:bch_payments(*)')
       .eq('id', orderId)
       .single();
 
