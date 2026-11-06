@@ -4,34 +4,26 @@
   import { formatNPR } from '$lib/utils';
   import { Upload, X, ImageIcon, ChevronLeft, Star, Eye } from 'lucide-svelte';
   import { env as publicEnv } from '$env/dynamic/public';
-  import { createClient } from '@supabase/supabase-js';
+  import { createBrowserClient } from '@supabase/ssr';
   import type { Database } from '$lib/types/database';
 
   let { data }: { data: PageData } = $props();
 
   let uploadedImages = $state<string[]>([]);
   let uploading = $state(false);
-  let supabaseBrowser = $state<ReturnType<typeof createClient<Database>> | null>(null);
+  let supabaseBrowser = $state<ReturnType<typeof createBrowserClient<Database>> | null>(null);
 
   // Create browser client for uploads using session from cookies
   $effect(() => {
     if (publicEnv.PUBLIC_SUPABASE_URL && publicEnv.PUBLIC_SUPABASE_ANON_KEY) {
-      supabaseBrowser = createClient<Database>(publicEnv.PUBLIC_SUPABASE_URL, publicEnv.PUBLIC_SUPABASE_ANON_KEY, {
-        auth: { persistSession: false }
-      });
+      // Share the SSR auth cookie written by the admin login flow. A plain
+      // supabase-js client has no session here, so Storage treats uploads as anon.
+      supabaseBrowser = createBrowserClient<Database>(
+        publicEnv.PUBLIC_SUPABASE_URL,
+        publicEnv.PUBLIC_SUPABASE_ANON_KEY
+      );
     }
   });
-
-  function getAccessToken() {
-    const cookies = document.cookie.split(';');
-    for (const c of cookies) {
-      const [name, value] = c.trim().split('=');
-      if (name.startsWith('sb-') && name.endsWith('-auth-token')) {
-        return value;
-      }
-    }
-    return null;
-  }
 
   async function handleFileUpload(e: Event) {
     const input = e.currentTarget as HTMLInputElement;
@@ -39,22 +31,12 @@
 
     uploading = true;
 
-    // Set the session from cookies
-    const token = getAccessToken();
-    if (token) {
-      const [access_token, refresh_token] = token.split('.');
-      // Actually parse properly
-      try {
-        const parsed = JSON.parse(atob(token));
-        if (parsed.access_token) {
-          await supabaseBrowser.auth.setSession({
-            access_token: parsed.access_token,
-            refresh_token: parsed.refresh_token
-          });
-        }
-      } catch {
-        // Try alternative parsing
-      }
+    const { data: { session }, error: sessionError } = await supabaseBrowser.auth.getSession();
+    if (sessionError || !session) {
+      toasts.error('Your admin session expired. Please sign in again.');
+      uploading = false;
+      input.value = '';
+      return;
     }
 
     for (const file of Array.from(input.files)) {
