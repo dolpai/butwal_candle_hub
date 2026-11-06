@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { enhance } from '$app/forms';
   import { cart, getCartTotal, getEffectivePrice } from '$lib/cart.svelte';
   import { formatNPR } from '$lib/utils';
   import { NEPAL_PROVINCES } from '$lib/config';
@@ -34,15 +35,6 @@
 
   let errors = $state<Record<string, string>>(form?.errors || {});
 
-  function handleSubmit(e: Event) {
-    e.preventDefault();
-    if (cartItems.length === 0) {
-      toasts.error('Your cart is empty');
-      return;
-    }
-    submitting = true;
-  }
-
   let isFreeDelivery = $derived(deliveryFee === 0);
 </script>
 
@@ -65,7 +57,27 @@
       <a href="/shop" class="btn-primary">Shop Now</a>
     </div>
   {:else}
-    <form onsubmit={handleSubmit} method="POST" action="?/placeOrder" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <form
+      method="POST"
+      action="?/placeOrder"
+      use:enhance={({ cancel }) => {
+        if (cartItems.length === 0) {
+          cancel();
+          toasts.error('Your cart is empty');
+          return;
+        }
+
+        submitting = true;
+        return async ({ update }) => {
+          try {
+            await update();
+          } finally {
+            submitting = false;
+          }
+        };
+      }}
+      class="grid grid-cols-1 lg:grid-cols-3 gap-6"
+    >
       <!-- Left: Form -->
       <div class="lg:col-span-2 space-y-6">
         {#if form?.error}
