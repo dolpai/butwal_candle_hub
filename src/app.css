@@ -1,0 +1,99 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-cream text-brown font-sans antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-beige;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gold rounded-full;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-gold-dark;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-gold text-white px-6 py-3 rounded-lg font-medium transition-all hover:bg-gold-dark active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-secondary {
+    @apply bg-brown text-cream px-6 py-3 rounded-lg font-medium transition-all hover:bg-brown-dark active:scale-95;
+  }
+
+  .btn-outline {
+    @apply border-2 border-gold text-brown px-6 py-3 rounded-lg font-medium transition-all hover:bg-gold hover:text-white active:scale-95;
+  }
+
+  .btn-festive {
+    @apply bg-festive text-white px-6 py-3 rounded-lg font-medium transition-all hover:bg-festive-dark active:scale-95;
+  }
+
+  .btn-ghost {
+    @apply text-brown hover:text-gold transition-colors px-3 py-2 rounded-lg hover:bg-beige;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-3 rounded-lg border border-beige-dark bg-white text-brown placeholder:text-brown-light/50 focus:outline-none focus:ring-2 focus:ring-gold/40 focus:border-gold transition-all;
+  }
+
+  .card {
+    @apply bg-white rounded-xl shadow-sm border border-beige/60 overflow-hidden transition-all;
+  }
+
+  .section-padding {
+    @apply px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto;
+  }
+
+  .skeleton {
+    @apply bg-beige animate-pulse rounded;
+  }
+
+  .badge {
+    @apply inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium;
+  }
+
+  .badge-gold {
+    @apply badge bg-gold/15 text-gold-dark;
+  }
+
+  .badge-success {
+    @apply badge bg-success/15 text-success;
+  }
+
+  .badge-danger {
+    @apply badge bg-danger/15 text-danger;
+  }
+
+  .badge-warning {
+    @apply badge bg-warning/15 text-warning;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
