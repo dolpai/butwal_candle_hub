@@ -7,7 +7,7 @@ import { fail, redirect, error } from '@sveltejs/kit';
 export const load: PageServerLoad = async ({ params }) => {
   const client = getAdminClient();
   const [productResult, categories] = await Promise.all([
-    client.from('products').select('*, category:categories(*)').eq('id', params.id).single(),
+    client.from('bch_products').select('*, category:bch_categories(*)').eq('id', params.id).single(),
     getCategories()
   ]);
 
@@ -54,7 +54,7 @@ export const actions: Actions = {
     if (images.length === 0) return fail(400, { error: 'At least one product image is required' });
 
     const client = getAdminClient();
-    const { error } = await client.from('products').update({
+    const { error } = await client.from('bch_products').update({
       name: name.trim(),
       description: description.trim(),
       price,
@@ -77,7 +77,7 @@ export const actions: Actions = {
     if (!session) return fail(401, { error: 'Unauthorized' });
 
     const client = getAdminClient();
-    const { error } = await client.from('products').delete().eq('id', params.id);
+    const { error } = await client.from('bch_products').delete().eq('id', params.id);
 
     if (error) return fail(500, { error: error.message });
 

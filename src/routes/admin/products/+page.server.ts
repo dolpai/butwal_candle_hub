@@ -6,7 +6,7 @@ import { slugify } from '$lib/utils';
 export const load: PageServerLoad = async () => {
   const client = getAdminClient();
   const [productsResult, categories] = await Promise.all([
-    client.from('products').select('*, category:categories(*)').order('created_at', { ascending: false }),
+    client.from('bch_products').select('*, category:bch_categories(*)').order('created_at', { ascending: false }),
     getCategories()
   ]);
 
@@ -24,7 +24,7 @@ export const actions: Actions = {
     if (!id) return { error: 'Product ID is required' };
 
     const client = getAdminClient();
-    const { error } = await client.from('products').delete().eq('id', id);
+    const { error } = await client.from('bch_products').delete().eq('id', id);
 
     if (error) return { error: error.message };
     return { success: true };
@@ -37,7 +37,7 @@ export const actions: Actions = {
 
     const client = getAdminClient();
     const { error } = await client
-      .from('products')
+      .from('bch_products')
       .update({ is_published: !current, updated_at: new Date().toISOString() })
       .eq('id', id);
 
@@ -52,7 +52,7 @@ export const actions: Actions = {
 
     const client = getAdminClient();
     const { error } = await client
-      .from('products')
+      .from('bch_products')
       .update({ is_featured: !current, updated_at: new Date().toISOString() })
       .eq('id', id);
 
@@ -68,7 +68,7 @@ export const actions: Actions = {
 
     const client = getAdminClient();
     const { error } = await client
-      .from('categories')
+      .from('bch_categories')
       .insert({ name, slug: slugify(name) });
 
     if (error) return { error: error.message };

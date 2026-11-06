@@ -44,7 +44,7 @@ export const actions: Actions = {
     if (images.length === 0) return fail(400, { error: 'At least one product image is required' });
 
     const client = getAdminClient();
-    const { data, error } = await client.from('products').insert({
+    const { data, error } = await client.from('bch_products').insert({
       name: name.trim(),
       slug: slugify(name.trim()) + '-' + Date.now().toString(36),
       description: description.trim(),

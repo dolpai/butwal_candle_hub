@@ -7,7 +7,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
   if (session) {
     // Check if already admin
     const { data: profile } = await locals.supabase
-      .from('profiles')
+      .from('bch_profiles')
       .select('is_admin')
       .eq('id', session.user.id)
       .single();
@@ -41,7 +41,7 @@ export const actions: Actions = {
 
     // Check if user is admin
     const { data: profile } = await locals.supabase
-      .from('profiles')
+      .from('bch_profiles')
       .select('is_admin')
       .eq('id', data.user.id)
       .single();

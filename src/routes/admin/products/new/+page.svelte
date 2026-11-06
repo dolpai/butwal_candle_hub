@@ -68,7 +68,7 @@
       const filePath = `products/${fileName}`;
 
       const { data: uploadData, error } = await supabaseBrowser.storage
-        .from('product-images')
+        .from('bch-product-images')
         .upload(filePath, file, { cacheControl: '3600' });
 
       if (error) {
@@ -77,7 +77,7 @@
       }
 
       const { data: urlData } = supabaseBrowser.storage
-        .from('product-images')
+        .from('bch-product-images')
         .getPublicUrl(filePath);
 
       uploadedImages = [...uploadedImages, urlData.publicUrl];

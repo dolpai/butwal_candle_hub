@@ -37,7 +37,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 
     // Check if user is admin
     const { data: profile } = await supabase
-      .from('profiles')
+      .from('bch_profiles')
       .select('is_admin')
       .eq('id', session.user.id)
       .single();

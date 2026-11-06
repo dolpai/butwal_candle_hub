@@ -8,7 +8,7 @@ export const load: LayoutServerLoad = async ({ locals }) => {
   }
 
   const { data: profile } = await locals.supabase
-    .from('profiles')
+    .from('bch_profiles')
     .select('is_admin')
     .eq('id', session.user.id)
     .single();

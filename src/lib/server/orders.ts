@@ -39,7 +39,7 @@ export async function createOrder(params: {
     // Fetch products and validate stock
     const productIds = params.items.map((i) => i.product_id);
     const { data: productsData, error: productsError } = await client
-      .from('products')
+      .from('bch_products')
       .select('*')
       .in('id', productIds);
 
@@ -75,7 +75,7 @@ export async function createOrder(params: {
 
     // Insert order
     const { data: order, error: orderError } = await client
-      .from('orders')
+      .from('bch_orders')
       .insert({
         order_number: orderNumber,
         customer_name: params.customer_name,
@@ -110,17 +110,17 @@ export async function createOrder(params: {
     }));
 
     const { error: itemsError } = await client
-      .from('order_items')
+      .from('bch_order_items')
       .insert(itemsToInsert as any);
 
     if (itemsError) {
       // Rollback order
-      await client.from('orders').delete().eq('id', orderId);
+      await client.from('bch_orders').delete().eq('id', orderId);
       throw new Error(`Failed to create order items: ${itemsError.message}`);
     }
 
     // Create initial payment record
-    await client.from('payments').insert({
+    await client.from('bch_payments').insert({
       order_id: orderId,
       payment_method: params.payment_method,
       amount: totalAmount,
@@ -133,7 +133,7 @@ export async function createOrder(params: {
       const product = products.find((p) => p.id === item.product_id);
       if (product) {
         await client
-          .from('products')
+          .from('bch_products')
           .update({ stock: product.stock - item.quantity, updated_at: new Date().toISOString() } as any)
           .eq('id', item.product_id);
       }
@@ -153,7 +153,7 @@ export async function getOrderByNumber(
   try {
     const client = getAdminClient();
     let query = client
-      .from('orders')
+      .from('bch_orders')
       .select('*, order_items(*), payments(*)')
       .eq('order_number', orderNumber);
 
@@ -175,7 +175,7 @@ export async function getOrderByNumberOnly(orderNumber: string): Promise<Order |
   try {
     const client = getAdminClient();
     const { data, error } = await client
-      .from('orders')
+      .from('bch_orders')
       .select('*, order_items(*)')
       .eq('order_number', orderNumber)
       .single();
@@ -192,7 +192,7 @@ export async function getAllOrders(limit = 100, offset = 0): Promise<Order[]> {
   try {
     const client = getAdminClient();
     const { data, error } = await client
-      .from('orders')
+      .from('bch_orders')
       .select('*, order_items(*)')
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1);
@@ -212,7 +212,7 @@ export async function updateOrderStatus(
   try {
     const client = getAdminClient();
     const { error } = await client
-      .from('orders')
+      .from('bch_orders')
       .update({ order_status: status, updated_at: new Date().toISOString() } as any)
       .eq('id', orderId);
 
@@ -231,12 +231,12 @@ export async function updatePaymentStatus(
   try {
     const client = getAdminClient();
     const { error } = await client
-      .from('orders')
+      .from('bch_orders')
       .update({ payment_status: status, updated_at: new Date().toISOString() } as any)
       .eq('id', orderId);
 
     if (error) throw error;
-    await client.from('payments').update({ status, updated_at: new Date().toISOString() } as any).eq('order_id', orderId);
+    await client.from('bch_payments').update({ status, updated_at: new Date().toISOString() } as any).eq('order_id', orderId);
     return true;
   } catch (e) {
     console.error('Failed to update payment status:', e);
@@ -248,7 +248,7 @@ export async function getOrderById(orderId: string): Promise<Order | null> {
   try {
     const client = getAdminClient();
     const { data, error } = await client
-      .from('orders')
+      .from('bch_orders')
       .select('*, order_items(*), payments(*)')
       .eq('id', orderId)
       .single();
@@ -268,10 +268,10 @@ export async function getDashboardStats() {
     today.setHours(0, 0, 0, 0);
 
     const [allOrders, todayOrders, products, pendingOrders] = await Promise.all([
-      client.from('orders').select('total_amount, order_status, payment_status, created_at'),
-      client.from('orders').select('*').gte('created_at', today.toISOString()),
-      client.from('products').select('stock, is_published'),
-      client.from('orders').select('*').eq('order_status', 'pending')
+      client.from('bch_orders').select('total_amount, order_status, payment_status, created_at'),
+      client.from('bch_orders').select('*').gte('created_at', today.toISOString()),
+      client.from('bch_products').select('stock, is_published'),
+      client.from('bch_orders').select('*').eq('order_status', 'pending')
     ]);
 
     const totalOrders = allOrders.data?.length || 0;

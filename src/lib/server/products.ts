@@ -6,8 +6,8 @@ export async function getPublishedProducts(): Promise<Product[]> {
   try {
     const client = getAdminClient();
     const { data, error } = await client
-      .from('products')
-      .select('*, category:categories(*)')
+      .from('bch_products')
+      .select('*, category:bch_categories(*)')
       .eq('is_published', true)
       .order('created_at', { ascending: false });
 
@@ -23,8 +23,8 @@ export async function getFeaturedProducts(): Promise<Product[]> {
   try {
     const client = getAdminClient();
     const { data, error } = await client
-      .from('products')
-      .select('*, category:categories(*)')
+      .from('bch_products')
+      .select('*, category:bch_categories(*)')
       .eq('is_published', true)
       .eq('is_featured', true)
       .order('created_at', { ascending: false });
@@ -41,8 +41,8 @@ export async function getNewArrivals(): Promise<Product[]> {
   try {
     const client = getAdminClient();
     const { data, error } = await client
-      .from('products')
-      .select('*, category:categories(*)')
+      .from('bch_products')
+      .select('*, category:bch_categories(*)')
       .eq('is_published', true)
       .order('created_at', { ascending: false })
       .limit(8);
@@ -59,8 +59,8 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
   try {
     const client = getAdminClient();
     const { data, error } = await client
-      .from('products')
-      .select('*, category:categories(*)')
+      .from('bch_products')
+      .select('*, category:bch_categories(*)')
       .eq('slug', slug)
       .single();
 
@@ -80,8 +80,8 @@ export async function getRelatedProducts(
   try {
     const client = getAdminClient();
     let query = client
-      .from('products')
-      .select('*, category:categories(*)')
+      .from('bch_products')
+      .select('*, category:bch_categories(*)')
       .eq('is_published', true)
       .neq('id', productId)
       .limit(limit);
@@ -103,7 +103,7 @@ export async function getCategories(): Promise<Category[]> {
   try {
     const client = getAdminClient();
     const { data, error } = await client
-      .from('categories')
+      .from('bch_categories')
       .select('*')
       .order('name', { ascending: true });
 
@@ -119,7 +119,7 @@ export async function getStoreSettings(): Promise<StoreSettings> {
   try {
     const client = getAdminClient();
     const { data, error } = await client
-      .from('store_settings')
+      .from('bch_store_settings')
       .select('*')
       .limit(1)
       .single();

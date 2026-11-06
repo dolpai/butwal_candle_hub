@@ -1,7 +1,7 @@
 export type Database = {
   public: {
     Tables: {
-      categories: {
+      bch_categories: {
         Row: {
           id: string;
           name: string;
@@ -25,7 +25,7 @@ export type Database = {
           updated_at?: string;
         };
       };
-      products: {
+      bch_products: {
         Row: {
           id: string;
           name: string;
@@ -70,7 +70,7 @@ export type Database = {
           updated_at?: string;
         };
       };
-      orders: {
+      bch_orders: {
         Row: {
           id: string;
           order_number: string;
@@ -85,7 +85,7 @@ export type Database = {
           items_total: number;
           delivery_fee: number;
           total_amount: number;
-          payment_method: 'cod' | 'esewa';
+          payment_method: 'cod' | 'qr' | 'esewa';
           payment_status: 'unpaid' | 'paid' | 'refunded' | 'failed';
           order_status: 'pending' | 'confirmed' | 'processing' | 'shipped' | 'out_for_delivery' | 'delivered' | 'cancelled';
           notes: string | null;
@@ -106,7 +106,7 @@ export type Database = {
           items_total: number;
           delivery_fee: number;
           total_amount: number;
-          payment_method: 'cod' | 'esewa';
+          payment_method: 'cod' | 'qr' | 'esewa';
           payment_status?: 'unpaid' | 'paid' | 'refunded' | 'failed';
           order_status?: 'pending' | 'confirmed' | 'processing' | 'shipped' | 'out_for_delivery' | 'delivered' | 'cancelled';
           notes?: string | null;
@@ -125,14 +125,14 @@ export type Database = {
           items_total?: number;
           delivery_fee?: number;
           total_amount?: number;
-          payment_method?: 'cod' | 'esewa';
+          payment_method?: 'cod' | 'qr' | 'esewa';
           payment_status?: 'unpaid' | 'paid' | 'refunded' | 'failed';
           order_status?: 'pending' | 'confirmed' | 'processing' | 'shipped' | 'out_for_delivery' | 'delivered' | 'cancelled';
           notes?: string | null;
           updated_at?: string;
         };
       };
-      order_items: {
+      bch_order_items: {
         Row: {
           id: string;
           order_id: string;
@@ -161,12 +161,12 @@ export type Database = {
           subtotal?: number;
         };
       };
-      payments: {
+      bch_payments: {
         Row: {
           id: string;
           order_id: string;
           transaction_uuid: string | null;
-          payment_method: 'cod' | 'esewa';
+          payment_method: 'cod' | 'qr' | 'esewa';
           amount: number;
           status: 'unpaid' | 'paid' | 'refunded' | 'failed';
           raw_response: Record<string, unknown> | null;
@@ -177,9 +177,9 @@ export type Database = {
           id?: string;
           order_id: string;
           transaction_uuid?: string | null;
-          payment_method: 'cod' | 'esewa';
+          payment_method: 'cod' | 'qr' | 'esewa';
           amount: number;
-          status?: 'unpaid' | 'paid' | 'refabased' | 'failed';
+          status?: 'unpaid' | 'paid' | 'refunded' | 'failed';
           raw_response?: Record<string, unknown> | null;
           created_at?: string;
           updated_at?: string;
@@ -191,7 +191,7 @@ export type Database = {
           updated_at?: string;
         };
       };
-      store_settings: {
+      bch_store_settings: {
         Row: {
           id: string;
           announcement: string | null;
@@ -234,7 +234,7 @@ export type Database = {
           updated_at?: string;
         };
       };
-      profiles: {
+      bch_profiles: {
         Row: {
           id: string;
           is_admin: boolean;

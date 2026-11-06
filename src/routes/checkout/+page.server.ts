@@ -69,7 +69,7 @@ export const actions: Actions = {
       const client = getAdminClient();
       const productIds = cartItems.map((i) => i.product_id);
       const { data: products } = await client
-        .from('products')
+        .from('bch_products')
         .select('*')
         .in('id', productIds);
 

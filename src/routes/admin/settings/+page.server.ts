@@ -47,13 +47,13 @@ export const actions: Actions = {
     const client = getAdminClient();
 
     // Check if settings row exists
-    const { data: existing } = await client.from('store_settings').select('id').limit(1).single();
+    const { data: existing } = await client.from('bch_store_settings').select('id').limit(1).single();
 
     if (existing?.id) {
-      const { error } = await client.from('store_settings').update(updateData).eq('id', existing.id);
+      const { error } = await client.from('bch_store_settings').update(updateData).eq('id', existing.id);
       if (error) return fail(500, { error: error.message });
     } else {
-      const { error } = await client.from('store_settings').insert(updateData);
+      const { error } = await client.from('bch_store_settings').insert(updateData);
       if (error) return fail(500, { error: error.message });
     }
 

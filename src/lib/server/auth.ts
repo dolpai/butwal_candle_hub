@@ -2,7 +2,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 
 export async function isAdmin(supabase: SupabaseClient, userId: string): Promise<boolean> {
   const { data, error } = await supabase
-    .from('profiles')
+    .from('bch_profiles')
     .select('is_admin')
     .eq('id', userId)
     .single();
@@ -16,7 +16,7 @@ export async function getAdminUser(supabase: SupabaseClient) {
   if (!user) return null;
 
   const { data: profile } = await supabase
-    .from('profiles')
+    .from('bch_profiles')
     .select('is_admin')
     .eq('id', user.id)
     .single();
