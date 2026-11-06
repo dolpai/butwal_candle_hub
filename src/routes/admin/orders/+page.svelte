@@ -3,11 +3,12 @@
   import { formatNPR, formatDate } from '$lib/utils';
   import { ORDER_STATUS_MAP, PAYMENT_STATUS_MAP, getPhoneLink, getWhatsAppLink } from '$lib/config';
   import { toasts } from '$lib/toast.svelte';
-  import { Search, Phone, MessageCircle, Eye, Filter } from 'lucide-svelte';
+  import { Search, Phone, MessageCircle, Eye, Trash2 } from 'lucide-svelte';
 
   let { data }: { data: PageData } = $props();
 
   let localSearch = $state(data.searchQuery || '');
+  let deletingOrderId = $state<string | null>(null);
 
   function updateFilter(key: string, value: string) {
     const url = new URL(window.location.href);
@@ -30,6 +31,28 @@
       window.location.reload();
     } else {
       toasts.error('Failed to update order status');
+    }
+  }
+
+  async function handleDeleteOrder(orderId: string, orderNumber: string) {
+    const confirmed = confirm(
+      `Permanently delete order ${orderNumber}? Its order items and payment record will also be deleted.`
+    );
+    if (!confirmed) return;
+
+    deletingOrderId = orderId;
+    const formData = new FormData();
+    formData.append('order_id', orderId);
+
+    try {
+      const response = await fetch('?/deleteOrder', { method: 'POST', body: formData });
+      if (!response.ok) throw new Error('Delete failed');
+
+      toasts.success(`Order ${orderNumber} deleted`);
+      window.location.reload();
+    } catch {
+      toasts.error(`Could not delete order ${orderNumber}`);
+      deletingOrderId = null;
     }
   }
 
@@ -146,9 +169,21 @@
                 </select>
               </td>
               <td class="px-4 py-3 text-center">
+                <div class="inline-flex items-center justify-center gap-3">
                 <a href="/admin/orders/{order.id}" class="text-gold hover:text-gold-dark" title="View details">
                   <Eye class="w-4 h-4" />
                 </a>
+                <button
+                  type="button"
+                  class="text-danger hover:text-danger/70 disabled:opacity-40"
+                  title="Delete order"
+                  aria-label="Delete order {order.order_number}"
+                  disabled={deletingOrderId === order.id}
+                  onclick={() => handleDeleteOrder(order.id, order.order_number)}
+                >
+                  <Trash2 class="w-4 h-4" />
+                </button>
+                </div>
               </td>
             </tr>
           {/each}
